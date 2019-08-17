@@ -17,11 +17,16 @@ logger = logging.getLogger(__name__)
 
 default_options = ["fr","sa","so"]
 def create_doodle(bot, update):
+    args = update.message.text.split(" ")[1:]
+    if len(args) > 0:
+        options = args
+    else:
+        options = default_options
     doodle_message_id = update.message.message_id + 1 # FIXME this doesn't seem safe - we need to retrieve the message id of the reply we're sending at the end of this method
-    doodle_id = db.create_doodle(update.message.chat_id, doodle_message_id, ",".join(default_options))
+    doodle_id = db.create_doodle(update.message.chat_id, doodle_message_id, ",".join(options))
     doodle = db.get_doodle(update.message.chat_id, doodle_message_id)
 
-    keyboard = [[InlineKeyboardButton(o, callback_data=o) for o in default_options]]
+    keyboard = [[InlineKeyboardButton(o, callback_data=o) for o in options]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     update.message.reply_text(format_doodle(doodle), reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
@@ -51,7 +56,7 @@ def format_doodle(doodle):
 
     for user_name, answers in doodle['answers'].items():
         row = format_cell(user_name, header_width)
-        for option in default_options:
+        for option in doodle['options']:
             if option in answers:
                 row += format_cell(format_answer(answers[option]), cell_width)
             else:
