@@ -8,7 +8,7 @@ import telegram
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 import db
-import os
+import os, re
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -35,21 +35,27 @@ def format_answer(answer):
         return "~"
     return "?"
 
-def right_pad(s, width):
+def format_cell(s, width):
+    s=s[:width]
     while len(s) < width:
         s = s+" "
-    return s
+    return s + "|"
 
 def format_doodle(doodle):
-    row_width = 3
-    msg = "```\n" + right_pad("", 7) + "".join([right_pad(o, row_width) for o in doodle['options']]) + "\n"
+    header_width = 7
+    cell_width = 3
+    msg = "```\n"
+    header = format_cell("", header_width) + "".join([format_cell(o, cell_width) for o in doodle['options']])
+    divider = re.sub(".", "-", header)
+    msg += header + "\n" + divider + "\n"
+
     for user_name, answers in doodle['answers'].items():
-        row = right_pad(user_name[:6], 7)
+        row = format_cell(user_name, header_width)
         for option in default_options:
             if option in answers:
-                row += right_pad(format_answer(answers[option]), row_width)
+                row += format_cell(format_answer(answers[option]), cell_width)
             else:
-                row += right_pad(format_answer(None), row_width)
+                row += format_cell(format_answer(None), cell_width)
         msg += row + "\n"
 
     msg += '\n```'
