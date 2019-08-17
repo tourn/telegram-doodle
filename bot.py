@@ -28,12 +28,12 @@ def create_doodle(bot, update):
 
 def format_answer(answer):
     if answer == "YES":
-        return "+"
+        return u"✔️"
     if answer == "NO":
-        return "-"
+        return u"❌"
     if answer == "MAYBE":
-        return "~"
-    return "?"
+        return u"❔"
+    return u" "
 
 def format_cell(s, width):
     s=s[:width]
