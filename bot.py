@@ -33,11 +33,11 @@ def create_doodle(bot, update):
 
 def format_answer(answer):
     if answer == "YES":
-        return u"✔️"
+        return u" ✓"
     if answer == "NO":
-        return u"❌"
+        return u" ✗"
     if answer == "MAYBE":
-        return u"❔"
+        return u" "
     return u" "
 
 def format_cell(s, width):
